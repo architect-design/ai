@@ -1,0 +1,240 @@
+{
+  "$comment": "SpecGenAI Native Specification Format — sample_spec.json",
+  "spec_name": "PaymentProcessorFile",
+  "spec_type": "json",
+  "version": "2.1",
+  "description": "Internal payment processor flat file format with header, details and trailer.",
+
+  "file_structure": {
+    "format": "delimited",
+    "delimiter": "|",
+    "line_ending": "\n",
+    "encoding": "utf-8",
+    "file_extension": ".psv",
+    "header_records": ["HDR"],
+    "detail_records": ["TXN"],
+    "trailer_records": ["TRL"],
+    "batch_supported": false
+  },
+
+  "records": [
+    {
+      "record_type_id": "HDR",
+      "name": "File Header",
+      "category": "header",
+      "fixed_width": false,
+      "repeatable": false,
+      "min_occurrences": 1,
+      "max_occurrences": 1,
+      "ordering": 0,
+      "fields": [
+        {
+          "name": "record_id",
+          "type": "constant",
+          "length": 3,
+          "default_value": "HDR",
+          "description": "Record type identifier",
+          "required": true
+        },
+        {
+          "name": "file_date",
+          "type": "date",
+          "length": 8,
+          "format_string": "YYYYMMDD",
+          "description": "File creation date",
+          "required": true
+        },
+        {
+          "name": "institution_code",
+          "type": "numeric",
+          "length": 6,
+          "min_value": 100000,
+          "max_value": 999999,
+          "description": "Institution identifier code",
+          "required": true
+        },
+        {
+          "name": "file_sequence_number",
+          "type": "sequence",
+          "length": 4,
+          "description": "Auto-incrementing file sequence",
+          "required": true
+        }
+      ]
+    },
+
+    {
+      "record_type_id": "TXN",
+      "name": "Transaction Detail",
+      "category": "detail",
+      "fixed_width": false,
+      "repeatable": true,
+      "min_occurrences": 1,
+      "max_occurrences": null,
+      "ordering": 10,
+      "fields": [
+        {
+          "name": "record_id",
+          "type": "constant",
+          "length": 3,
+          "default_value": "TXN",
+          "required": true
+        },
+        {
+          "name": "transaction_id",
+          "type": "sequence",
+          "length": 12,
+          "description": "Unique transaction identifier",
+          "required": true
+        },
+        {
+          "name": "transaction_date",
+          "type": "date",
+          "length": 8,
+          "format_string": "YYYYMMDD",
+          "required": true
+        },
+        {
+          "name": "card_number",
+          "type": "pan",
+          "length": 16,
+          "description": "Primary Account Number (PAN) — Luhn valid",
+          "required": true
+        },
+        {
+          "name": "expiry_date",
+          "type": "expiry",
+          "length": 4,
+          "format_string": "YYMM",
+          "required": true
+        },
+        {
+          "name": "transaction_type",
+          "type": "enum",
+          "allowed_values": ["PURCHASE", "REFUND", "REVERSAL", "CHARGEBACK"],
+          "description": "Type of transaction",
+          "required": true
+        },
+        {
+          "name": "amount",
+          "type": "amount",
+          "length": 12,
+          "min_value": 1,
+          "max_value": 999999999,
+          "description": "Transaction amount in cents",
+          "required": true
+        },
+        {
+          "name": "currency_code",
+          "type": "enum",
+          "allowed_values": ["840", "978", "826", "036"],
+          "description": "ISO 4217 numeric currency code",
+          "required": true
+        },
+        {
+          "name": "merchant_id",
+          "type": "alphanumeric",
+          "length": 15,
+          "description": "Merchant identifier",
+          "required": true
+        },
+        {
+          "name": "merchant_name",
+          "type": "string",
+          "max_length": 40,
+          "description": "Merchant display name",
+          "required": true
+        },
+        {
+          "name": "authorization_code",
+          "type": "alphanumeric",
+          "length": 6,
+          "description": "Issuer authorization code",
+          "required": false,
+          "nullable": true
+        },
+        {
+          "name": "response_code",
+          "type": "enum",
+          "allowed_values": ["00", "01", "05", "12", "14", "51", "54", "91"],
+          "description": "ISO 8583 response code",
+          "required": true
+        },
+        {
+          "name": "account_number",
+          "type": "account_number",
+          "length": 10,
+          "description": "Customer bank account number",
+          "required": false
+        },
+        {
+          "name": "routing_number",
+          "type": "routing_number",
+          "length": 9,
+          "description": "Bank ABA routing number — ABA checksum validated",
+          "required": false,
+          "dependencies": [
+            {
+              "depends_on": "account_number",
+              "type": "conditional",
+              "condition": "account_number is not None"
+            }
+          ]
+        },
+        {
+          "name": "is_international",
+          "type": "boolean",
+          "description": "True if cross-border transaction",
+          "required": true
+        }
+      ]
+    },
+
+    {
+      "record_type_id": "TRL",
+      "name": "File Trailer",
+      "category": "trailer",
+      "fixed_width": false,
+      "repeatable": false,
+      "min_occurrences": 1,
+      "max_occurrences": 1,
+      "ordering": 99,
+      "fields": [
+        {
+          "name": "record_id",
+          "type": "constant",
+          "default_value": "TRL",
+          "required": true
+        },
+        {
+          "name": "total_records",
+          "type": "numeric",
+          "length": 8,
+          "description": "Count of TXN records in file",
+          "required": true
+        },
+        {
+          "name": "total_amount",
+          "type": "amount",
+          "length": 15,
+          "description": "Sum of all TXN amounts in cents",
+          "required": true
+        },
+        {
+          "name": "file_hash",
+          "type": "checksum",
+          "length": 10,
+          "description": "Sum of all transaction amounts mod 10^10",
+          "required": true
+        }
+      ]
+    }
+  ],
+
+  "global_rules": [
+    "trailer.total_records == len(detail_records)",
+    "trailer.total_amount == sum(txn.amount for txn in detail_records)",
+    "all card_numbers pass Luhn checksum",
+    "all routing_numbers pass ABA checksum"
+  ]
+}

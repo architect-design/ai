@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+python-multipart
+pydantic
+pydantic-settings
+aiofiles
+httpx
+pytest
+pytest-asyncio
+pytest-cov
+faker
+numpy
+scipy
