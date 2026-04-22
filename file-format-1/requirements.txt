@@ -1,0 +1,17 @@
+# Core
+streamlit>=1.32.0
+pandas>=2.0.0
+
+# Database (install the ones you need)
+sqlalchemy>=2.0.0          # Required for DB tab
+oracledb>=1.4.0            # Oracle (modern thin driver – no client needed)
+# cx_Oracle>=8.3.0         # Oracle (legacy – requires Oracle Instant Client)
+psycopg2-binary>=2.9.0     # PostgreSQL
+pymysql>=1.1.0             # MySQL / MariaDB
+pyodbc>=4.0.0              # SQL Server
+
+# Optional: Faker for richer synthetic data
+# faker>=20.0.0
+
+# Testing
+pytest>=7.0.0

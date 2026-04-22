@@ -1,0 +1,1154 @@
+{
+  "name": "NACHA",
+  "format_type": "nacha",
+  "description": "NACHA ACH (Automated Clearing House) fixed-width 94-character record format",
+  "record_length": 94,
+  "line_delimiter": "\n",
+  "records": {
+    "1": {
+      "name": "File Header Record",
+      "fields": [
+        {
+          "name": "RECORD_TYPE_CODE",
+          "start": 1,
+          "end": 1,
+          "length": 1,
+          "data_type": "numeric",
+          "value": "1",
+          "required": true
+        },
+        {
+          "name": "PRIORITY_CODE",
+          "start": 2,
+          "end": 3,
+          "length": 2,
+          "data_type": "numeric",
+          "required": true,
+          "default": "01"
+        },
+        {
+          "name": "IMMEDIATE_DESTINATION",
+          "start": 4,
+          "end": 13,
+          "length": 10,
+          "data_type": "routing_number",
+          "required": true
+        },
+        {
+          "name": "IMMEDIATE_ORIGIN",
+          "start": 14,
+          "end": 23,
+          "length": 10,
+          "data_type": "numeric",
+          "required": true
+        },
+        {
+          "name": "FILE_CREATION_DATE",
+          "start": 24,
+          "end": 29,
+          "length": 6,
+          "data_type": "date",
+          "format": "YYMMDD",
+          "required": true
+        },
+        {
+          "name": "FILE_CREATION_TIME",
+          "start": 30,
+          "end": 33,
+          "length": 4,
+          "data_type": "numeric",
+          "required": false
+        },
+        {
+          "name": "FILE_ID_MODIFIER",
+          "start": 34,
+          "end": 34,
+          "length": 1,
+          "data_type": "alphanumeric",
+          "required": true
+        },
+        {
+          "name": "RECORD_SIZE",
+          "start": 35,
+          "end": 37,
+          "length": 3,
+          "data_type": "numeric",
+          "value": "094",
+          "required": true
+        },
+        {
+          "name": "BLOCKING_FACTOR",
+          "start": 38,
+          "end": 39,
+          "length": 2,
+          "data_type": "numeric",
+          "value": "10",
+          "required": true
+        },
+        {
+          "name": "FORMAT_CODE",
+          "start": 40,
+          "end": 40,
+          "length": 1,
+          "data_type": "numeric",
+          "value": "1",
+          "required": true
+        },
+        {
+          "name": "IMMEDIATE_DESTINATION_NAME",
+          "start": 41,
+          "end": 63,
+          "length": 23,
+          "data_type": "alphanumeric",
+          "required": true
+        },
+        {
+          "name": "IMMEDIATE_ORIGIN_NAME",
+          "start": 64,
+          "end": 86,
+          "length": 23,
+          "data_type": "alphanumeric",
+          "required": true
+        },
+        {
+          "name": "REFERENCE_CODE",
+          "start": 87,
+          "end": 94,
+          "length": 8,
+          "data_type": "alphanumeric",
+          "required": false
+        }
+      ]
+    },
+    "5": {
+      "name": "Batch Header Record",
+      "fields": [
+        {
+          "name": "RECORD_TYPE_CODE",
+          "start": 1,
+          "end": 1,
+          "length": 1,
+          "data_type": "numeric",
+          "value": "5",
+          "required": true
+        },
+        {
+          "name": "SERVICE_CLASS_CODE",
+          "start": 2,
+          "end": 4,
+          "length": 3,
+          "data_type": "numeric",
+          "required": true,
+          "validation": {
+            "allowed": [
+              "200",
+              "220",
+              "225"
+            ]
+          }
+        },
+        {
+          "name": "COMPANY_NAME",
+          "start": 5,
+          "end": 20,
+          "length": 16,
+          "data_type": "alphanumeric",
+          "required": true
+        },
+        {
+          "name": "COMPANY_DISCRETIONARY_DATA",
+          "start": 21,
+          "end": 40,
+          "length": 20,
+          "data_type": "alphanumeric",
+          "required": false
+        },
+        {
+          "name": "COMPANY_IDENTIFICATION",
+          "start": 41,
+          "end": 50,
+          "length": 10,
+          "data_type": "alphanumeric",
+          "required": true
+        },
+        {
+          "name": "STANDARD_ENTRY_CLASS_CODE",
+          "start": 51,
+          "end": 53,
+          "length": 3,
+          "data_type": "alpha",
+          "required": true,
+          "validation": {
+            "allowed": [
+              "PPD",
+              "CCD",
+              "CTX",
+              "WEB",
+              "TEL",
+              "ARC",
+              "BOC",
+              "POP",
+              "RCK",
+              "ENR"
+            ]
+          }
+        },
+        {
+          "name": "COMPANY_ENTRY_DESCRIPTION",
+          "start": 54,
+          "end": 63,
+          "length": 10,
+          "data_type": "alphanumeric",
+          "required": true
+        },
+        {
+          "name": "COMPANY_DESCRIPTIVE_DATE",
+          "start": 64,
+          "end": 69,
+          "length": 6,
+          "data_type": "date",
+          "required": false
+        },
+        {
+          "name": "EFFECTIVE_ENTRY_DATE",
+          "start": 70,
+          "end": 75,
+          "length": 6,
+          "data_type": "date",
+          "format": "YYMMDD",
+          "required": true
+        },
+        {
+          "name": "SETTLEMENT_DATE",
+          "start": 76,
+          "end": 78,
+          "length": 3,
+          "data_type": "numeric",
+          "required": false
+        },
+        {
+          "name": "ORIGINATOR_STATUS_CODE",
+          "start": 79,
+          "end": 79,
+          "length": 1,
+          "data_type": "numeric",
+          "required": true
+        },
+        {
+          "name": "ODFI_IDENTIFICATION",
+          "start": 80,
+          "end": 87,
+          "length": 8,
+          "data_type": "routing_number",
+          "required": true
+        },
+        {
+          "name": "BATCH_NUMBER",
+          "start": 88,
+          "end": 94,
+          "length": 7,
+          "data_type": "numeric",
+          "required": true
+        }
+      ]
+    },
+    "6": {
+      "name": "Entry Detail Record",
+      "fields": [
+        {
+          "name": "RECORD_TYPE_CODE",
+          "start": 1,
+          "end": 1,
+          "length": 1,
+          "data_type": "numeric",
+          "value": "6",
+          "required": true
+        },
+        {
+          "name": "TRANSACTION_CODE",
+          "start": 2,
+          "end": 3,
+          "length": 2,
+          "data_type": "numeric",
+          "required": true,
+          "validation": {
+            "allowed": [
+              "22",
+              "23",
+              "24",
+              "27",
+              "28",
+              "29",
+              "32",
+              "33",
+              "34",
+              "37",
+              "38",
+              "39"
+            ]
+          }
+        },
+        {
+          "name": "RDFI_ROUTING_TRANSIT",
+          "start": 4,
+          "end": 11,
+          "length": 8,
+          "data_type": "routing_number",
+          "required": true
+        },
+        {
+          "name": "CHECK_DIGIT",
+          "start": 12,
+          "end": 12,
+          "length": 1,
+          "data_type": "numeric",
+          "required": true
+        },
+        {
+          "name": "DFI_ACCOUNT_NUMBER",
+          "start": 13,
+          "end": 29,
+          "length": 17,
+          "data_type": "account_number",
+          "required": true
+        },
+        {
+          "name": "AMOUNT",
+          "start": 30,
+          "end": 39,
+          "length": 10,
+          "data_type": "amount",
+          "required": true
+        },
+        {
+          "name": "INDIVIDUAL_IDENTIFICATION_NUMBER",
+          "start": 40,
+          "end": 54,
+          "length": 15,
+          "data_type": "alphanumeric",
+          "required": false
+        },
+        {
+          "name": "INDIVIDUAL_NAME",
+          "start": 55,
+          "end": 76,
+          "length": 22,
+          "data_type": "alphanumeric",
+          "required": true
+        },
+        {
+          "name": "DISCRETIONARY_DATA",
+          "start": 77,
+          "end": 78,
+          "length": 2,
+          "data_type": "alphanumeric",
+          "required": false
+        },
+        {
+          "name": "ADDENDA_RECORD_INDICATOR",
+          "start": 79,
+          "end": 79,
+          "length": 1,
+          "data_type": "numeric",
+          "required": true,
+          "validation": {
+            "allowed": [
+              "0",
+              "1"
+            ]
+          }
+        },
+        {
+          "name": "TRACE_NUMBER",
+          "start": 80,
+          "end": 94,
+          "length": 15,
+          "data_type": "numeric",
+          "required": true
+        }
+      ]
+    },
+    "8": {
+      "name": "Batch Control Record",
+      "fields": [
+        {
+          "name": "RECORD_TYPE_CODE",
+          "start": 1,
+          "end": 1,
+          "length": 1,
+          "data_type": "numeric",
+          "value": "8",
+          "required": true
+        },
+        {
+          "name": "SERVICE_CLASS_CODE",
+          "start": 2,
+          "end": 4,
+          "length": 3,
+          "data_type": "numeric",
+          "required": true
+        },
+        {
+          "name": "ENTRY_ADDENDA_COUNT",
+          "start": 5,
+          "end": 10,
+          "length": 6,
+          "data_type": "numeric",
+          "required": true
+        },
+        {
+          "name": "ENTRY_HASH",
+          "start": 11,
+          "end": 20,
+          "length": 10,
+          "data_type": "numeric",
+          "required": true
+        },
+        {
+          "name": "TOTAL_DEBIT_AMOUNT",
+          "start": 21,
+          "end": 32,
+          "length": 12,
+          "data_type": "amount",
+          "required": true
+        },
+        {
+          "name": "TOTAL_CREDIT_AMOUNT",
+          "start": 33,
+          "end": 44,
+          "length": 12,
+          "data_type": "amount",
+          "required": true
+        },
+        {
+          "name": "COMPANY_IDENTIFICATION",
+          "start": 45,
+          "end": 54,
+          "length": 10,
+          "data_type": "alphanumeric",
+          "required": true
+        },
+        {
+          "name": "MESSAGE_AUTHENTICATION_CODE",
+          "start": 55,
+          "end": 73,
+          "length": 19,
+          "data_type": "alphanumeric",
+          "required": false
+        },
+        {
+          "name": "RESERVED",
+          "start": 74,
+          "end": 79,
+          "length": 6,
+          "data_type": "filler",
+          "required": false
+        },
+        {
+          "name": "ODFI_IDENTIFICATION",
+          "start": 80,
+          "end": 87,
+          "length": 8,
+          "data_type": "routing_number",
+          "required": true
+        },
+        {
+          "name": "BATCH_NUMBER",
+          "start": 88,
+          "end": 94,
+          "length": 7,
+          "data_type": "numeric",
+          "required": true
+        }
+      ]
+    },
+    "9": {
+      "name": "File Control Record",
+      "fields": [
+        {
+          "name": "RECORD_TYPE_CODE",
+          "start": 1,
+          "end": 1,
+          "length": 1,
+          "data_type": "numeric",
+          "value": "9",
+          "required": true
+        },
+        {
+          "name": "BATCH_COUNT",
+          "start": 2,
+          "end": 7,
+          "length": 6,
+          "data_type": "numeric",
+          "required": true
+        },
+        {
+          "name": "BLOCK_COUNT",
+          "start": 8,
+          "end": 13,
+          "length": 6,
+          "data_type": "numeric",
+          "required": true
+        },
+        {
+          "name": "ENTRY_ADDENDA_COUNT",
+          "start": 14,
+          "end": 21,
+          "length": 8,
+          "data_type": "numeric",
+          "required": true
+        },
+        {
+          "name": "ENTRY_HASH",
+          "start": 22,
+          "end": 31,
+          "length": 10,
+          "data_type": "numeric",
+          "required": true
+        },
+        {
+          "name": "TOTAL_DEBIT_AMOUNT",
+          "start": 32,
+          "end": 43,
+          "length": 12,
+          "data_type": "amount",
+          "required": true
+        },
+        {
+          "name": "TOTAL_CREDIT_AMOUNT",
+          "start": 44,
+          "end": 55,
+          "length": 12,
+          "data_type": "amount",
+          "required": true
+        },
+        {
+          "name": "RESERVED",
+          "start": 56,
+          "end": 94,
+          "length": 39,
+          "data_type": "filler",
+          "required": false
+        }
+      ]
+    }
+  },
+  "fields": [
+    {
+      "name": "RECORD_TYPE_CODE",
+      "start": 1,
+      "end": 1,
+      "length": 1,
+      "data_type": "numeric",
+      "value": "1",
+      "required": true,
+      "record_type": "1",
+      "record_name": "File Header Record"
+    },
+    {
+      "name": "PRIORITY_CODE",
+      "start": 2,
+      "end": 3,
+      "length": 2,
+      "data_type": "numeric",
+      "required": true,
+      "default": "01",
+      "record_type": "1",
+      "record_name": "File Header Record"
+    },
+    {
+      "name": "IMMEDIATE_DESTINATION",
+      "start": 4,
+      "end": 13,
+      "length": 10,
+      "data_type": "routing_number",
+      "required": true,
+      "record_type": "1",
+      "record_name": "File Header Record"
+    },
+    {
+      "name": "IMMEDIATE_ORIGIN",
+      "start": 14,
+      "end": 23,
+      "length": 10,
+      "data_type": "numeric",
+      "required": true,
+      "record_type": "1",
+      "record_name": "File Header Record"
+    },
+    {
+      "name": "FILE_CREATION_DATE",
+      "start": 24,
+      "end": 29,
+      "length": 6,
+      "data_type": "date",
+      "format": "YYMMDD",
+      "required": true,
+      "record_type": "1",
+      "record_name": "File Header Record"
+    },
+    {
+      "name": "FILE_CREATION_TIME",
+      "start": 30,
+      "end": 33,
+      "length": 4,
+      "data_type": "numeric",
+      "required": false,
+      "record_type": "1",
+      "record_name": "File Header Record"
+    },
+    {
+      "name": "FILE_ID_MODIFIER",
+      "start": 34,
+      "end": 34,
+      "length": 1,
+      "data_type": "alphanumeric",
+      "required": true,
+      "record_type": "1",
+      "record_name": "File Header Record"
+    },
+    {
+      "name": "RECORD_SIZE",
+      "start": 35,
+      "end": 37,
+      "length": 3,
+      "data_type": "numeric",
+      "value": "094",
+      "required": true,
+      "record_type": "1",
+      "record_name": "File Header Record"
+    },
+    {
+      "name": "BLOCKING_FACTOR",
+      "start": 38,
+      "end": 39,
+      "length": 2,
+      "data_type": "numeric",
+      "value": "10",
+      "required": true,
+      "record_type": "1",
+      "record_name": "File Header Record"
+    },
+    {
+      "name": "FORMAT_CODE",
+      "start": 40,
+      "end": 40,
+      "length": 1,
+      "data_type": "numeric",
+      "value": "1",
+      "required": true,
+      "record_type": "1",
+      "record_name": "File Header Record"
+    },
+    {
+      "name": "IMMEDIATE_DESTINATION_NAME",
+      "start": 41,
+      "end": 63,
+      "length": 23,
+      "data_type": "alphanumeric",
+      "required": true,
+      "record_type": "1",
+      "record_name": "File Header Record"
+    },
+    {
+      "name": "IMMEDIATE_ORIGIN_NAME",
+      "start": 64,
+      "end": 86,
+      "length": 23,
+      "data_type": "alphanumeric",
+      "required": true,
+      "record_type": "1",
+      "record_name": "File Header Record"
+    },
+    {
+      "name": "REFERENCE_CODE",
+      "start": 87,
+      "end": 94,
+      "length": 8,
+      "data_type": "alphanumeric",
+      "required": false,
+      "record_type": "1",
+      "record_name": "File Header Record"
+    },
+    {
+      "name": "RECORD_TYPE_CODE",
+      "start": 1,
+      "end": 1,
+      "length": 1,
+      "data_type": "numeric",
+      "value": "5",
+      "required": true,
+      "record_type": "5",
+      "record_name": "Batch Header Record"
+    },
+    {
+      "name": "SERVICE_CLASS_CODE",
+      "start": 2,
+      "end": 4,
+      "length": 3,
+      "data_type": "numeric",
+      "required": true,
+      "validation": {
+        "allowed": [
+          "200",
+          "220",
+          "225"
+        ]
+      },
+      "record_type": "5",
+      "record_name": "Batch Header Record"
+    },
+    {
+      "name": "COMPANY_NAME",
+      "start": 5,
+      "end": 20,
+      "length": 16,
+      "data_type": "alphanumeric",
+      "required": true,
+      "record_type": "5",
+      "record_name": "Batch Header Record"
+    },
+    {
+      "name": "COMPANY_DISCRETIONARY_DATA",
+      "start": 21,
+      "end": 40,
+      "length": 20,
+      "data_type": "alphanumeric",
+      "required": false,
+      "record_type": "5",
+      "record_name": "Batch Header Record"
+    },
+    {
+      "name": "COMPANY_IDENTIFICATION",
+      "start": 41,
+      "end": 50,
+      "length": 10,
+      "data_type": "alphanumeric",
+      "required": true,
+      "record_type": "5",
+      "record_name": "Batch Header Record"
+    },
+    {
+      "name": "STANDARD_ENTRY_CLASS_CODE",
+      "start": 51,
+      "end": 53,
+      "length": 3,
+      "data_type": "alpha",
+      "required": true,
+      "validation": {
+        "allowed": [
+          "PPD",
+          "CCD",
+          "CTX",
+          "WEB",
+          "TEL",
+          "ARC",
+          "BOC",
+          "POP",
+          "RCK",
+          "ENR"
+        ]
+      },
+      "record_type": "5",
+      "record_name": "Batch Header Record"
+    },
+    {
+      "name": "COMPANY_ENTRY_DESCRIPTION",
+      "start": 54,
+      "end": 63,
+      "length": 10,
+      "data_type": "alphanumeric",
+      "required": true,
+      "record_type": "5",
+      "record_name": "Batch Header Record"
+    },
+    {
+      "name": "COMPANY_DESCRIPTIVE_DATE",
+      "start": 64,
+      "end": 69,
+      "length": 6,
+      "data_type": "date",
+      "required": false,
+      "record_type": "5",
+      "record_name": "Batch Header Record"
+    },
+    {
+      "name": "EFFECTIVE_ENTRY_DATE",
+      "start": 70,
+      "end": 75,
+      "length": 6,
+      "data_type": "date",
+      "format": "YYMMDD",
+      "required": true,
+      "record_type": "5",
+      "record_name": "Batch Header Record"
+    },
+    {
+      "name": "SETTLEMENT_DATE",
+      "start": 76,
+      "end": 78,
+      "length": 3,
+      "data_type": "numeric",
+      "required": false,
+      "record_type": "5",
+      "record_name": "Batch Header Record"
+    },
+    {
+      "name": "ORIGINATOR_STATUS_CODE",
+      "start": 79,
+      "end": 79,
+      "length": 1,
+      "data_type": "numeric",
+      "required": true,
+      "record_type": "5",
+      "record_name": "Batch Header Record"
+    },
+    {
+      "name": "ODFI_IDENTIFICATION",
+      "start": 80,
+      "end": 87,
+      "length": 8,
+      "data_type": "routing_number",
+      "required": true,
+      "record_type": "5",
+      "record_name": "Batch Header Record"
+    },
+    {
+      "name": "BATCH_NUMBER",
+      "start": 88,
+      "end": 94,
+      "length": 7,
+      "data_type": "numeric",
+      "required": true,
+      "record_type": "5",
+      "record_name": "Batch Header Record"
+    },
+    {
+      "name": "RECORD_TYPE_CODE",
+      "start": 1,
+      "end": 1,
+      "length": 1,
+      "data_type": "numeric",
+      "value": "6",
+      "required": true,
+      "record_type": "6",
+      "record_name": "Entry Detail Record"
+    },
+    {
+      "name": "TRANSACTION_CODE",
+      "start": 2,
+      "end": 3,
+      "length": 2,
+      "data_type": "numeric",
+      "required": true,
+      "validation": {
+        "allowed": [
+          "22",
+          "23",
+          "24",
+          "27",
+          "28",
+          "29",
+          "32",
+          "33",
+          "34",
+          "37",
+          "38",
+          "39"
+        ]
+      },
+      "record_type": "6",
+      "record_name": "Entry Detail Record"
+    },
+    {
+      "name": "RDFI_ROUTING_TRANSIT",
+      "start": 4,
+      "end": 11,
+      "length": 8,
+      "data_type": "routing_number",
+      "required": true,
+      "record_type": "6",
+      "record_name": "Entry Detail Record"
+    },
+    {
+      "name": "CHECK_DIGIT",
+      "start": 12,
+      "end": 12,
+      "length": 1,
+      "data_type": "numeric",
+      "required": true,
+      "record_type": "6",
+      "record_name": "Entry Detail Record"
+    },
+    {
+      "name": "DFI_ACCOUNT_NUMBER",
+      "start": 13,
+      "end": 29,
+      "length": 17,
+      "data_type": "account_number",
+      "required": true,
+      "record_type": "6",
+      "record_name": "Entry Detail Record"
+    },
+    {
+      "name": "AMOUNT",
+      "start": 30,
+      "end": 39,
+      "length": 10,
+      "data_type": "amount",
+      "required": true,
+      "record_type": "6",
+      "record_name": "Entry Detail Record"
+    },
+    {
+      "name": "INDIVIDUAL_IDENTIFICATION_NUMBER",
+      "start": 40,
+      "end": 54,
+      "length": 15,
+      "data_type": "alphanumeric",
+      "required": false,
+      "record_type": "6",
+      "record_name": "Entry Detail Record"
+    },
+    {
+      "name": "INDIVIDUAL_NAME",
+      "start": 55,
+      "end": 76,
+      "length": 22,
+      "data_type": "alphanumeric",
+      "required": true,
+      "record_type": "6",
+      "record_name": "Entry Detail Record"
+    },
+    {
+      "name": "DISCRETIONARY_DATA",
+      "start": 77,
+      "end": 78,
+      "length": 2,
+      "data_type": "alphanumeric",
+      "required": false,
+      "record_type": "6",
+      "record_name": "Entry Detail Record"
+    },
+    {
+      "name": "ADDENDA_RECORD_INDICATOR",
+      "start": 79,
+      "end": 79,
+      "length": 1,
+      "data_type": "numeric",
+      "required": true,
+      "validation": {
+        "allowed": [
+          "0",
+          "1"
+        ]
+      },
+      "record_type": "6",
+      "record_name": "Entry Detail Record"
+    },
+    {
+      "name": "TRACE_NUMBER",
+      "start": 80,
+      "end": 94,
+      "length": 15,
+      "data_type": "numeric",
+      "required": true,
+      "record_type": "6",
+      "record_name": "Entry Detail Record"
+    },
+    {
+      "name": "RECORD_TYPE_CODE",
+      "start": 1,
+      "end": 1,
+      "length": 1,
+      "data_type": "numeric",
+      "value": "8",
+      "required": true,
+      "record_type": "8",
+      "record_name": "Batch Control Record"
+    },
+    {
+      "name": "SERVICE_CLASS_CODE",
+      "start": 2,
+      "end": 4,
+      "length": 3,
+      "data_type": "numeric",
+      "required": true,
+      "record_type": "8",
+      "record_name": "Batch Control Record"
+    },
+    {
+      "name": "ENTRY_ADDENDA_COUNT",
+      "start": 5,
+      "end": 10,
+      "length": 6,
+      "data_type": "numeric",
+      "required": true,
+      "record_type": "8",
+      "record_name": "Batch Control Record"
+    },
+    {
+      "name": "ENTRY_HASH",
+      "start": 11,
+      "end": 20,
+      "length": 10,
+      "data_type": "numeric",
+      "required": true,
+      "record_type": "8",
+      "record_name": "Batch Control Record"
+    },
+    {
+      "name": "TOTAL_DEBIT_AMOUNT",
+      "start": 21,
+      "end": 32,
+      "length": 12,
+      "data_type": "amount",
+      "required": true,
+      "record_type": "8",
+      "record_name": "Batch Control Record"
+    },
+    {
+      "name": "TOTAL_CREDIT_AMOUNT",
+      "start": 33,
+      "end": 44,
+      "length": 12,
+      "data_type": "amount",
+      "required": true,
+      "record_type": "8",
+      "record_name": "Batch Control Record"
+    },
+    {
+      "name": "COMPANY_IDENTIFICATION",
+      "start": 45,
+      "end": 54,
+      "length": 10,
+      "data_type": "alphanumeric",
+      "required": true,
+      "record_type": "8",
+      "record_name": "Batch Control Record"
+    },
+    {
+      "name": "MESSAGE_AUTHENTICATION_CODE",
+      "start": 55,
+      "end": 73,
+      "length": 19,
+      "data_type": "alphanumeric",
+      "required": false,
+      "record_type": "8",
+      "record_name": "Batch Control Record"
+    },
+    {
+      "name": "RESERVED",
+      "start": 74,
+      "end": 79,
+      "length": 6,
+      "data_type": "filler",
+      "required": false,
+      "record_type": "8",
+      "record_name": "Batch Control Record"
+    },
+    {
+      "name": "ODFI_IDENTIFICATION",
+      "start": 80,
+      "end": 87,
+      "length": 8,
+      "data_type": "routing_number",
+      "required": true,
+      "record_type": "8",
+      "record_name": "Batch Control Record"
+    },
+    {
+      "name": "BATCH_NUMBER",
+      "start": 88,
+      "end": 94,
+      "length": 7,
+      "data_type": "numeric",
+      "required": true,
+      "record_type": "8",
+      "record_name": "Batch Control Record"
+    },
+    {
+      "name": "RECORD_TYPE_CODE",
+      "start": 1,
+      "end": 1,
+      "length": 1,
+      "data_type": "numeric",
+      "value": "9",
+      "required": true,
+      "record_type": "9",
+      "record_name": "File Control Record"
+    },
+    {
+      "name": "BATCH_COUNT",
+      "start": 2,
+      "end": 7,
+      "length": 6,
+      "data_type": "numeric",
+      "required": true,
+      "record_type": "9",
+      "record_name": "File Control Record"
+    },
+    {
+      "name": "BLOCK_COUNT",
+      "start": 8,
+      "end": 13,
+      "length": 6,
+      "data_type": "numeric",
+      "required": true,
+      "record_type": "9",
+      "record_name": "File Control Record"
+    },
+    {
+      "name": "ENTRY_ADDENDA_COUNT",
+      "start": 14,
+      "end": 21,
+      "length": 8,
+      "data_type": "numeric",
+      "required": true,
+      "record_type": "9",
+      "record_name": "File Control Record"
+    },
+    {
+      "name": "ENTRY_HASH",
+      "start": 22,
+      "end": 31,
+      "length": 10,
+      "data_type": "numeric",
+      "required": true,
+      "record_type": "9",
+      "record_name": "File Control Record"
+    },
+    {
+      "name": "TOTAL_DEBIT_AMOUNT",
+      "start": 32,
+      "end": 43,
+      "length": 12,
+      "data_type": "amount",
+      "required": true,
+      "record_type": "9",
+      "record_name": "File Control Record"
+    },
+    {
+      "name": "TOTAL_CREDIT_AMOUNT",
+      "start": 44,
+      "end": 55,
+      "length": 12,
+      "data_type": "amount",
+      "required": true,
+      "record_type": "9",
+      "record_name": "File Control Record"
+    },
+    {
+      "name": "RESERVED",
+      "start": 56,
+      "end": 94,
+      "length": 39,
+      "data_type": "filler",
+      "required": false,
+      "record_type": "9",
+      "record_name": "File Control Record"
+    }
+  ],
+  "vocabulary": {},
+  "_saved_at": "2026-04-19T18:06:26.808693"
+}

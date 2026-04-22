@@ -1,0 +1,158 @@
+NACHA ACH FILE FORMAT SPECIFICATION
+Version 2024 – NACHA Operating Rules
+=====================================
+
+OVERVIEW
+--------
+The ACH file is a fixed-width flat file. Every record is exactly 94 characters
+wide followed by a newline. Records are grouped into blocks of 10 lines; if
+the total line count is not a multiple of 10, pad with "9" characters to fill.
+
+RECORD TYPE CODES
+-----------------
+1  File Header Record       (one per file, first record)
+5  Batch Header Record      (one per batch)
+6  Entry Detail Record      (one per transaction)
+7  Addenda Record           (optional, follows Entry Detail)
+8  Batch Control Record     (one per batch, closes batch)
+9  File Control Record      (one per file, last data record)
+
+=================================================================
+RECORD TYPE 1 – FILE HEADER
+=================================================================
+Field Name                   Pos   Len  Type  Required  Notes
+------------------------------------------------------------
+Record Type Code             1-1    1   N     Required  Value = 1
+Priority Code                2-3    2   N     Required  Value = 01
+Immediate Destination        4-13   10  N     Required  Leading space + 9-digit ABA routing
+Immediate Origin             14-23  10  N     Required  10-digit company EIN or routing number
+File Creation Date           24-29   6  DT    Required  Format = YYMMDD
+File Creation Time           30-33   4  N     Optional  Format = HHMM; blank if not used
+File ID Modifier             34-34   1  AN    Required  A-Z or 0-9; uniquifies same-day files
+Record Size                  35-37   3  N     Required  Value = 094
+Blocking Factor              38-39   2  N     Required  Value = 10
+Format Code                  40-40   1  N     Required  Value = 1
+Immediate Destination Name   41-63  23  AN    Required  Bank/ODFI name, left-justified, space-padded
+Immediate Origin Name        64-86  23  AN    Required  Company name, left-justified, space-padded
+Reference Code               87-94   8  AN    Optional  User-defined; spaces if unused
+
+=================================================================
+RECORD TYPE 5 – BATCH HEADER
+=================================================================
+Field Name                   Pos   Len  Type  Required  Notes
+------------------------------------------------------------
+Record Type Code             1-1    1   N     Required  Value = 5
+Service Class Code           2-4    3   N     Required  200=Mixed 220=Credits 225=Debits
+Company Name                 5-20   16  AN    Required  Company initiating the entries
+Company Discretionary Data   21-40  20  AN    Optional  Any value; often blank
+Company Identification       41-50  10  AN    Required  Company EIN or assigned ID
+Standard Entry Class Code    51-53   3  A     Required  PPD CCD CTX WEB TEL ARC BOC POP RCK
+Company Entry Description    54-63  10  AN    Required  Shows on receiver's statement; e.g. PAYROLL
+Company Descriptive Date     64-69   6  AN    Optional  Date shown on statement; YYMMDD or blank
+Effective Entry Date         70-75   6  DT    Required  Format = YYMMDD; settlement date
+Settlement Date              76-78   3  N     System    Julian date filled by RDFI; blank on input
+Originator Status Code       79-79   1  N     Required  1=ODFI 2=Fed Reserve
+ODFI Identification          80-87   8  N     Required  First 8 digits of ODFI routing number
+Batch Number                 88-94   7  N     Required  Sequentially assigned; right-justified zero-fill
+
+ALLOWED VALUES – Service Class Code
+  200  Mixed debits and credits
+  220  Credits only (e.g. direct deposit)
+  225  Debits only (e.g. preauthorised payment)
+
+ALLOWED VALUES – Standard Entry Class Code
+  PPD  Prearranged Payment and Deposit (consumer)
+  CCD  Corporate Credit or Debit
+  CTX  Corporate Trade Exchange
+  WEB  Internet-Initiated Entry
+  TEL  Telephone-Initiated Entry
+  ARC  Accounts Receivable Entry
+  BOC  Back Office Conversion
+  POP  Point of Purchase
+  RCK  Re-presented Check
+
+=================================================================
+RECORD TYPE 6 – ENTRY DETAIL
+=================================================================
+Field Name                       Pos   Len  Type  Required  Notes
+------------------------------------------------------------
+Record Type Code                 1-1    1   N     Required  Value = 6
+Transaction Code                 2-3    2   N     Required  See table below
+RDFI Routing Transit Number      4-11   8   N     Required  First 8 digits of RDFI ABA number
+Check Digit                      12-12  1   N     Required  9th digit of RDFI ABA routing number
+DFI Account Number               13-29  17  AN    Required  Receiver's account; left-just space-pad
+Amount                           30-39  10  N     Required  Dollars and cents; no decimal; zero-fill
+Individual Identification Number 40-54  15  AN    Optional  Receiver ID; left-just space-pad
+Individual Name                  55-76  22  AN    Required  Receiver's name; left-just space-pad
+Discretionary Data               77-78   2  AN    Optional  User-defined
+Addenda Record Indicator         79-79   1  N     Required  0=no addenda 1=addenda follows
+Trace Number                     80-94  15  N     Required  ODFI routing (8) + seq number (7)
+
+ALLOWED VALUES – Transaction Code
+  22  Checking credit (deposit)
+  23  Checking credit pre-notification
+  24  Checking zero-dollar remittance (addenda only)
+  27  Checking debit (withdrawal)
+  28  Checking debit pre-notification
+  29  Checking zero-dollar remittance
+  32  Savings credit (deposit)
+  33  Savings credit pre-notification
+  34  Savings zero-dollar remittance
+  37  Savings debit (withdrawal)
+  38  Savings debit pre-notification
+  39  Savings zero-dollar remittance
+
+=================================================================
+RECORD TYPE 7 – ADDENDA
+=================================================================
+Field Name                   Pos   Len  Type  Required  Notes
+------------------------------------------------------------
+Record Type Code             1-1    1   N     Required  Value = 7
+Addenda Type Code            2-3    2   N     Required  02=POS/MTE/SHR/TRX 05=CTX/IAT 98=Return 99=NOC
+Payment Related Information  4-83   80  AN    Optional  Free-form or ANSI X12 data
+Sequence Number              84-87   4  N     Required  1-9999 within batch
+Entry Detail Sequence Number 88-94   7  N     Required  Last 7 digits of trace number of parent
+
+=================================================================
+RECORD TYPE 8 – BATCH CONTROL
+=================================================================
+Field Name                   Pos   Len  Type  Required  Notes
+------------------------------------------------------------
+Record Type Code             1-1    1   N     Required  Value = 8
+Service Class Code           2-4    3   N     Required  Must match Batch Header
+Entry/Addenda Count          5-10   6   N     Required  Count of type 6 and 7 records in batch
+Entry Hash                   11-20  10  N     Required  Sum of RDFI routing numbers (rightmost 10 digits)
+Total Debit Dollar Amount    21-32  12  N     Required  Sum of debit amounts in batch; zero-fill
+Total Credit Dollar Amount   33-44  12  N     Required  Sum of credit amounts in batch; zero-fill
+Company Identification       45-54  10  AN    Required  Must match Batch Header
+Message Authentication Code  55-73  19  AN    Optional  Reserved; spaces
+Reserved                     74-79   6  AN    Optional  Spaces
+ODFI Identification          80-87   8  N     Required  Must match Batch Header
+Batch Number                 88-94   7  N     Required  Must match Batch Header
+
+=================================================================
+RECORD TYPE 9 – FILE CONTROL
+=================================================================
+Field Name                   Pos   Len  Type  Required  Notes
+------------------------------------------------------------
+Record Type Code             1-1    1   N     Required  Value = 9
+Batch Count                  2-7    6   N     Required  Total number of batch header records
+Block Count                  8-13   6   N     Required  Total blocks (rounded up to multiple of 10)
+Entry/Addenda Count          14-21  8   N     Required  Total count of type 6 and 7 records
+Entry Hash                   22-31  10  N     Required  Sum of all RDFI routings in file
+Total Debit Dollar Amount    32-43  12  N     Required  Sum of all debits in file
+Total Credit Dollar Amount   44-55  12  N     Required  Sum of all credits in file
+Reserved                     56-94  39  AN    Optional  Spaces
+
+=================================================================
+VALIDATION RULES
+=================================================================
+1. Every record must be exactly 94 characters (excluding line terminator).
+2. File total lines must be a multiple of 10 (pad with '9' * 94 if needed).
+3. Entry Hash in Batch Control = sum of first 8 digits of all RDFI routing numbers in that batch,
+   take only the rightmost 10 digits.
+4. Entry Hash in File Control = same, summed across all batches.
+5. Debit/Credit totals in File Control = sum across all batches.
+6. Batch numbers must be sequential starting at 0000001.
+7. Trace number = ODFI routing (8 digits) + 7-digit sequence number within batch.
+8. ABA routing number 9th digit must satisfy: (3*d1 + 7*d2 + d3 + 3*d4 + 7*d5 + d6 + 3*d7 + 7*d8 + d9) mod 10 = 0

@@ -1,0 +1,158 @@
+SWIFT MT103 SINGLE CUSTOMER CREDIT TRANSFER
+Specification Reference: SWIFT Standards MT November 2024
+=========================================================
+
+OVERVIEW
+--------
+MT103 is a SWIFT message type used for single customer credit transfers.
+It is sent by a financial institution on behalf of a customer to another
+financial institution to credit funds to the beneficiary's account.
+
+Format: Tag-based, variable length
+Delimiter: CRLF between tags
+Block structure: {1:...}{2:...}{3:...}{4:...}{5:...}
+
+=================================================================
+BLOCK 4 – TEXT BLOCK (MANDATORY FIELDS)
+=================================================================
+
+TAG 20 – SENDER'S REFERENCE
+Field Name           Tag   Type  Len   Required  Notes
+-------------------------------------------------------
+Transaction Ref      :20:  AN    16    Required  Unique reference; no leading/trailing slashes
+                                                 Allowed chars: A-Z 0-9 / - ? : ( ) . , ' +
+
+TAG 23B – BANK OPERATION CODE
+Field Name           Tag    Type  Len  Required  Notes
+-------------------------------------------------------
+Operation Code       :23B:  A     4    Required  CRED=Credit SPAY=Priority SSTD=Standard SPRI=Priority
+
+ALLOWED VALUES – 23B
+  CRED  Normal credit transfer
+  SPAY  Priority credit transfer with same-day value
+  SSTD  Standard settlement credit transfer
+  SPRI  Priority credit transfer
+
+TAG 32A – VALUE DATE, CURRENCY CODE, AMOUNT
+Field Name           Tag    Type  Len  Required  Notes
+-------------------------------------------------------
+Value Date           :32A:  DT    6    Required  Format = YYMMDD
+Currency Code        :32A:  A     3    Required  ISO 4217 currency code (e.g. USD EUR GBP)
+Amount               :32A:  N     15   Required  Decimal comma notation; up to 15 digits; max 3 decimal places
+                                                 e.g. 32A:260415USD10000,00
+
+TAG 33B – CURRENCY/INSTRUCTED AMOUNT (OPTIONAL)
+Field Name           Tag    Type  Len  Required  Notes
+-------------------------------------------------------
+Currency Code        :33B:  A     3    Optional  ISO 4217
+Amount               :33B:  N     15   Optional  Same notation as 32A
+
+TAG 50A / 50K – ORDERING CUSTOMER
+Field Name           Tag    Type  Len  Required  Notes
+-------------------------------------------------------
+Account (50A)        :50A:  AN    34   Conditional  IBAN or account number (with /SLASHES/)
+BIC (50A)            :50A:  AN    11   Conditional  BIC of ordering institution
+Name/Address (50K)   :50K:  AN    35x4 Conditional  4 lines max, 35 chars each
+                                                    First line may be /account/
+
+TAG 52A / 52D – ORDERING INSTITUTION (OPTIONAL)
+Field Name           Tag    Type  Len  Required  Notes
+-------------------------------------------------------
+BIC (52A)            :52A:  AN    11   Optional  BIC11 of sending institution
+Name/Address (52D)   :52D:  AN    35x4 Optional  Free-format name and address
+
+TAG 56A / 56D – INTERMEDIARY INSTITUTION (OPTIONAL)
+Field Name           Tag    Type  Len  Required  Notes
+-------------------------------------------------------
+BIC (56A)            :56A:  AN    11   Optional  BIC of intermediary bank
+Name/Address (56D)   :56D:  AN    35x4 Optional
+
+TAG 57A / 57D – ACCOUNT WITH INSTITUTION
+Field Name           Tag    Type  Len  Required  Notes
+-------------------------------------------------------
+BIC (57A)            :57A:  AN    11   Conditional  BIC of beneficiary's bank
+Name/Address (57D)   :57D:  AN    35x4 Conditional  Used when no BIC available
+
+TAG 59 / 59A – BENEFICIARY CUSTOMER
+Field Name           Tag   Type  Len   Required  Notes
+-------------------------------------------------------
+Account              :59:  AN    34    Required  /account/ on first line if present
+Name and Address     :59:  AN    35x4  Required  Up to 4 lines of 35 chars each
+BIC (59A variant)    :59A: AN    34    Optional  IBAN + BIC variant
+
+TAG 70 – REMITTANCE INFORMATION (OPTIONAL)
+Field Name           Tag   Type  Len   Required  Notes
+-------------------------------------------------------
+Narrative            :70:  AN    35x4  Optional  4 lines of 35 chars; payment details for beneficiary
+                                                 Code words: /INV/ /RFB/ /ROC/ /TSU/
+
+TAG 71A – DETAILS OF CHARGES
+Field Name           Tag    Type  Len  Required  Notes
+-------------------------------------------------------
+Charge Code          :71A:  A     3    Required  BEN=Beneficiary SHA=Shared OUR=Remitter pays all
+
+ALLOWED VALUES – 71A
+  BEN  All charges to beneficiary
+  SHA  Shared: remitter pays own bank, beneficiary pays receiving bank
+  OUR  All charges to ordering customer (remitter)
+
+TAG 71F – SENDER'S CHARGES (OPTIONAL)
+Field Name           Tag    Type  Len  Required  Notes
+-------------------------------------------------------
+Currency             :71F:  A     3    Optional  ISO 4217
+Amount               :71F:  N     15   Optional  Charge amount
+
+TAG 71G – RECEIVER'S CHARGES (OPTIONAL)
+Field Name           Tag    Type  Len  Required  Notes
+-------------------------------------------------------
+Currency             :71G:  A     3    Optional  ISO 4217
+Amount               :71G:  N     15   Optional
+
+TAG 72 – SENDER TO RECEIVER INFORMATION (OPTIONAL)
+Field Name           Tag   Type  Len   Required  Notes
+-------------------------------------------------------
+Narrative            :72:  AN    35x6  Optional  6 lines; use code words /ACC/ /INS/ /INT/ /REC/
+
+TAG 77B – REGULATORY REPORTING (OPTIONAL)
+Field Name           Tag    Type  Len  Required  Notes
+-------------------------------------------------------
+Narrative            :77B:  AN    35x3 Optional  3 lines; regulatory codes
+
+=================================================================
+VALIDATION RULES
+=================================================================
+1. Tag 20 (Sender Reference): max 16 chars; no leading/trailing slash; alphanumeric + /- ?:().,'+
+2. Tag 32A Amount: comma as decimal separator; no thousands separator
+3. Tag 71A: mandatory; must be BEN, SHA, or OUR
+4. Currency codes: must be valid ISO 4217 (3 uppercase letters)
+5. BIC codes: 8 or 11 characters; format AAAABBCCXXX
+6. IBAN: max 34 characters; country code + check digits + BBAN
+7. Value date must not be in the past by more than 3 business days
+8. Amount must be greater than 0.00
+9. At least one of 50A or 50K must be present (Ordering Customer)
+10. At least one of 59 or 59A must be present (Beneficiary)
+
+=================================================================
+SAMPLE MT103 MESSAGE
+=================================================================
+{1:F01BANKGB2LAXXX0000000000}
+{2:I103BANKUS33XXXXN}
+{3:{108:REFABC12345678}}
+{4:
+:20:TXN20260415001
+:23B:CRED
+:32A:260415USD25000,00
+:50K:/GB29NWBK60161331926819
+JOHN DOE
+123 MAIN STREET
+LONDON EC1A 1BB
+:57A:BOFAUS3NXXX
+:59:/US64BOFA0001234567890
+JANE SMITH
+456 BROADWAY
+NEW YORK NY 10001
+:70:/INV/2026-0415-001
+PAYMENT FOR SERVICES
+:71A:SHA
+-}
+{5:{CHK:ABCDEF123456}}

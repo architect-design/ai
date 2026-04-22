@@ -1,0 +1,501 @@
+{
+  "name": "ORACLE_GL",
+  "format_type": "oracle_gl",
+  "description": "Oracle General Ledger Journal Entry Interface flat-file format",
+  "delimiter": "|",
+  "has_header": true,
+  "records": {
+    "HEADER": {
+      "name": "Header Record",
+      "fields": [
+        {
+          "name": "STATUS",
+          "length": 1,
+          "data_type": "alpha",
+          "required": true,
+          "validation": {
+            "allowed": [
+              "N",
+              "P",
+              "C",
+              "E"
+            ]
+          }
+        },
+        {
+          "name": "LEDGER_ID",
+          "length": 15,
+          "data_type": "alphanumeric",
+          "required": true
+        },
+        {
+          "name": "ACCOUNTING_DATE",
+          "length": 11,
+          "data_type": "date",
+          "format": "DD-MON-YYYY",
+          "required": true
+        },
+        {
+          "name": "CURRENCY_CODE",
+          "length": 15,
+          "data_type": "alpha",
+          "required": true
+        },
+        {
+          "name": "DATE_CREATED",
+          "length": 11,
+          "data_type": "date",
+          "format": "DD-MON-YYYY",
+          "required": false
+        },
+        {
+          "name": "CREATED_BY",
+          "length": 100,
+          "data_type": "alphanumeric",
+          "required": false
+        },
+        {
+          "name": "ACTUAL_FLAG",
+          "length": 1,
+          "data_type": "alpha",
+          "required": true,
+          "validation": {
+            "allowed": [
+              "A",
+              "B",
+              "E"
+            ]
+          }
+        },
+        {
+          "name": "USER_JE_SOURCE_NAME",
+          "length": 25,
+          "data_type": "alphanumeric",
+          "required": true
+        },
+        {
+          "name": "USER_JE_CATEGORY_NAME",
+          "length": 25,
+          "data_type": "alphanumeric",
+          "required": true
+        },
+        {
+          "name": "ENCUMBRANCE_TYPE_ID",
+          "length": 15,
+          "data_type": "numeric",
+          "required": false
+        },
+        {
+          "name": "BUDGET_VERSION_ID",
+          "length": 15,
+          "data_type": "numeric",
+          "required": false
+        },
+        {
+          "name": "BALANCED_JE_FLAG",
+          "length": 1,
+          "data_type": "alpha",
+          "required": false,
+          "validation": {
+            "allowed": [
+              "Y",
+              "N"
+            ]
+          }
+        },
+        {
+          "name": "BALANCING_SEGMENT_VALUE",
+          "length": 25,
+          "data_type": "alphanumeric",
+          "required": false
+        }
+      ]
+    },
+    "LINE": {
+      "name": "Journal Line Record",
+      "fields": [
+        {
+          "name": "STATUS",
+          "length": 1,
+          "data_type": "alpha",
+          "required": true
+        },
+        {
+          "name": "EFFECTIVE_DATE",
+          "length": 11,
+          "data_type": "date",
+          "format": "DD-MON-YYYY",
+          "required": true
+        },
+        {
+          "name": "CODE_COMBINATION_ID",
+          "length": 15,
+          "data_type": "numeric",
+          "required": false
+        },
+        {
+          "name": "SEGMENT1",
+          "length": 25,
+          "data_type": "alphanumeric",
+          "required": true,
+          "label": "Company"
+        },
+        {
+          "name": "SEGMENT2",
+          "length": 25,
+          "data_type": "alphanumeric",
+          "required": true,
+          "label": "Department"
+        },
+        {
+          "name": "SEGMENT3",
+          "length": 25,
+          "data_type": "alphanumeric",
+          "required": true,
+          "label": "Account"
+        },
+        {
+          "name": "SEGMENT4",
+          "length": 25,
+          "data_type": "alphanumeric",
+          "required": false,
+          "label": "Sub-Account"
+        },
+        {
+          "name": "SEGMENT5",
+          "length": 25,
+          "data_type": "alphanumeric",
+          "required": false,
+          "label": "Product"
+        },
+        {
+          "name": "ENTERED_DR",
+          "length": 22,
+          "data_type": "amount",
+          "required": false
+        },
+        {
+          "name": "ENTERED_CR",
+          "length": 22,
+          "data_type": "amount",
+          "required": false
+        },
+        {
+          "name": "ACCOUNTED_DR",
+          "length": 22,
+          "data_type": "amount",
+          "required": false
+        },
+        {
+          "name": "ACCOUNTED_CR",
+          "length": 22,
+          "data_type": "amount",
+          "required": false
+        },
+        {
+          "name": "DESCRIPTION",
+          "length": 240,
+          "data_type": "alphanumeric",
+          "required": false
+        },
+        {
+          "name": "ATTRIBUTE1",
+          "length": 150,
+          "data_type": "alphanumeric",
+          "required": false
+        },
+        {
+          "name": "ATTRIBUTE2",
+          "length": 150,
+          "data_type": "alphanumeric",
+          "required": false
+        },
+        {
+          "name": "REFERENCE1",
+          "length": 100,
+          "data_type": "alphanumeric",
+          "required": false
+        },
+        {
+          "name": "REFERENCE2",
+          "length": 100,
+          "data_type": "alphanumeric",
+          "required": false
+        }
+      ]
+    }
+  },
+  "fields": [
+    {
+      "name": "STATUS",
+      "length": 1,
+      "data_type": "alpha",
+      "required": true,
+      "validation": {
+        "allowed": [
+          "N",
+          "P",
+          "C",
+          "E"
+        ]
+      },
+      "record_type": "HEADER",
+      "record_name": "Header Record"
+    },
+    {
+      "name": "LEDGER_ID",
+      "length": 15,
+      "data_type": "alphanumeric",
+      "required": true,
+      "record_type": "HEADER",
+      "record_name": "Header Record"
+    },
+    {
+      "name": "ACCOUNTING_DATE",
+      "length": 11,
+      "data_type": "date",
+      "format": "DD-MON-YYYY",
+      "required": true,
+      "record_type": "HEADER",
+      "record_name": "Header Record"
+    },
+    {
+      "name": "CURRENCY_CODE",
+      "length": 15,
+      "data_type": "alpha",
+      "required": true,
+      "record_type": "HEADER",
+      "record_name": "Header Record"
+    },
+    {
+      "name": "DATE_CREATED",
+      "length": 11,
+      "data_type": "date",
+      "format": "DD-MON-YYYY",
+      "required": false,
+      "record_type": "HEADER",
+      "record_name": "Header Record"
+    },
+    {
+      "name": "CREATED_BY",
+      "length": 100,
+      "data_type": "alphanumeric",
+      "required": false,
+      "record_type": "HEADER",
+      "record_name": "Header Record"
+    },
+    {
+      "name": "ACTUAL_FLAG",
+      "length": 1,
+      "data_type": "alpha",
+      "required": true,
+      "validation": {
+        "allowed": [
+          "A",
+          "B",
+          "E"
+        ]
+      },
+      "record_type": "HEADER",
+      "record_name": "Header Record"
+    },
+    {
+      "name": "USER_JE_SOURCE_NAME",
+      "length": 25,
+      "data_type": "alphanumeric",
+      "required": true,
+      "record_type": "HEADER",
+      "record_name": "Header Record"
+    },
+    {
+      "name": "USER_JE_CATEGORY_NAME",
+      "length": 25,
+      "data_type": "alphanumeric",
+      "required": true,
+      "record_type": "HEADER",
+      "record_name": "Header Record"
+    },
+    {
+      "name": "ENCUMBRANCE_TYPE_ID",
+      "length": 15,
+      "data_type": "numeric",
+      "required": false,
+      "record_type": "HEADER",
+      "record_name": "Header Record"
+    },
+    {
+      "name": "BUDGET_VERSION_ID",
+      "length": 15,
+      "data_type": "numeric",
+      "required": false,
+      "record_type": "HEADER",
+      "record_name": "Header Record"
+    },
+    {
+      "name": "BALANCED_JE_FLAG",
+      "length": 1,
+      "data_type": "alpha",
+      "required": false,
+      "validation": {
+        "allowed": [
+          "Y",
+          "N"
+        ]
+      },
+      "record_type": "HEADER",
+      "record_name": "Header Record"
+    },
+    {
+      "name": "BALANCING_SEGMENT_VALUE",
+      "length": 25,
+      "data_type": "alphanumeric",
+      "required": false,
+      "record_type": "HEADER",
+      "record_name": "Header Record"
+    },
+    {
+      "name": "STATUS",
+      "length": 1,
+      "data_type": "alpha",
+      "required": true,
+      "record_type": "LINE",
+      "record_name": "Journal Line Record"
+    },
+    {
+      "name": "EFFECTIVE_DATE",
+      "length": 11,
+      "data_type": "date",
+      "format": "DD-MON-YYYY",
+      "required": true,
+      "record_type": "LINE",
+      "record_name": "Journal Line Record"
+    },
+    {
+      "name": "CODE_COMBINATION_ID",
+      "length": 15,
+      "data_type": "numeric",
+      "required": false,
+      "record_type": "LINE",
+      "record_name": "Journal Line Record"
+    },
+    {
+      "name": "SEGMENT1",
+      "length": 25,
+      "data_type": "alphanumeric",
+      "required": true,
+      "label": "Company",
+      "record_type": "LINE",
+      "record_name": "Journal Line Record"
+    },
+    {
+      "name": "SEGMENT2",
+      "length": 25,
+      "data_type": "alphanumeric",
+      "required": true,
+      "label": "Department",
+      "record_type": "LINE",
+      "record_name": "Journal Line Record"
+    },
+    {
+      "name": "SEGMENT3",
+      "length": 25,
+      "data_type": "alphanumeric",
+      "required": true,
+      "label": "Account",
+      "record_type": "LINE",
+      "record_name": "Journal Line Record"
+    },
+    {
+      "name": "SEGMENT4",
+      "length": 25,
+      "data_type": "alphanumeric",
+      "required": false,
+      "label": "Sub-Account",
+      "record_type": "LINE",
+      "record_name": "Journal Line Record"
+    },
+    {
+      "name": "SEGMENT5",
+      "length": 25,
+      "data_type": "alphanumeric",
+      "required": false,
+      "label": "Product",
+      "record_type": "LINE",
+      "record_name": "Journal Line Record"
+    },
+    {
+      "name": "ENTERED_DR",
+      "length": 22,
+      "data_type": "amount",
+      "required": false,
+      "record_type": "LINE",
+      "record_name": "Journal Line Record"
+    },
+    {
+      "name": "ENTERED_CR",
+      "length": 22,
+      "data_type": "amount",
+      "required": false,
+      "record_type": "LINE",
+      "record_name": "Journal Line Record"
+    },
+    {
+      "name": "ACCOUNTED_DR",
+      "length": 22,
+      "data_type": "amount",
+      "required": false,
+      "record_type": "LINE",
+      "record_name": "Journal Line Record"
+    },
+    {
+      "name": "ACCOUNTED_CR",
+      "length": 22,
+      "data_type": "amount",
+      "required": false,
+      "record_type": "LINE",
+      "record_name": "Journal Line Record"
+    },
+    {
+      "name": "DESCRIPTION",
+      "length": 240,
+      "data_type": "alphanumeric",
+      "required": false,
+      "record_type": "LINE",
+      "record_name": "Journal Line Record"
+    },
+    {
+      "name": "ATTRIBUTE1",
+      "length": 150,
+      "data_type": "alphanumeric",
+      "required": false,
+      "record_type": "LINE",
+      "record_name": "Journal Line Record"
+    },
+    {
+      "name": "ATTRIBUTE2",
+      "length": 150,
+      "data_type": "alphanumeric",
+      "required": false,
+      "record_type": "LINE",
+      "record_name": "Journal Line Record"
+    },
+    {
+      "name": "REFERENCE1",
+      "length": 100,
+      "data_type": "alphanumeric",
+      "required": false,
+      "record_type": "LINE",
+      "record_name": "Journal Line Record"
+    },
+    {
+      "name": "REFERENCE2",
+      "length": 100,
+      "data_type": "alphanumeric",
+      "required": false,
+      "record_type": "LINE",
+      "record_name": "Journal Line Record"
+    }
+  ],
+  "vocabulary": {},
+  "_saved_at": "2026-04-19T18:06:26.858790"
+}
