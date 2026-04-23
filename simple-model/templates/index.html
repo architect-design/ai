@@ -1,0 +1,218 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Format AI Trainer</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { color: #333; text-align: center; }
+        .section { margin-bottom: 30px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; }
+        h2 { margin-top: 0; color: #007BFF; font-size: 1.2rem; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"], input[type="file"], select { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { background-color: #007BFF; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; transition: opacity 0.3s; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+        button:hover:not(:disabled) { background-color: #0056b3; }
+
+        /* Status Styling */
+        #train_status { margin-top: 10px; font-weight: bold; padding: 10px; border-radius: 4px; display: none; }
+        .status-info { background-color: #e7f3ff; color: #0056b3; border: 1px solid #b6d4fe; }
+        .status-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .status-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        .output-box { background-color: #2d2d2d; color: #0f0; padding: 15px; border-radius: 5px; white-space: pre-wrap; font-family: monospace; max-height: 400px; overflow-y: auto; }
+
+        /* Spinner */
+        .spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; margin-left: 10px; vertical-align: middle; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI Format Specification Learner</h1>
+
+        <!-- Upload Section -->
+        <div class="section">
+            <h2>1. Train New Format</h2>
+            <label for="format_name">Format Type Name:</label>
+            <input type="text" id="format_name" placeholder="e.g., JSON_Format_A" required>
+
+            <label for="file_upload">Upload Training File:</label>
+            <input type="file" id="file_upload" required>
+
+            <button id="train_btn" onclick="uploadAndTrain()">Start Training</button>
+            <div id="train_status"></div>
+        </div>
+
+        <!-- templates/index.html (Replace the Generate Section) -->
+
+        <!-- Generate Section -->
+        <div class="section">
+            <h2>2. Generate Test Data</h2>
+
+            <label for="model_select">Select Trained Format:</label>
+            <select id="model_select">
+                <option value="">-- Loading... --</option>
+            </select>
+            <button onclick="refreshModels()" style="padding:5px 10px; font-size:12px; margin-bottom:10px;">Refresh List</button>
+
+            <label for="seed_text">Seed Text (Optional):</label>
+            <input type="text" id="seed_text" placeholder="Start character (leave empty for auto)">
+
+            <!-- NEW: Mode Selection -->
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <div style="flex: 1;">
+                    <label for="gen_amount">Amount:</label>
+                    <input type="number" id="gen_amount" value="20" style="width: 100%;">
+                </div>
+                <div style="flex: 1;">
+                    <label for="gen_mode">Unit:</label>
+                    <select id="gen_mode" style="width: 100%; padding: 10px;">
+                        <option value="lines">Lines</option>
+                        <option value="chars">Characters</option>
+                    </select>
+                </div>
+            </div>
+
+            <button onclick="generateData()" style="margin-top: 15px;">Generate</button>
+        </div>
+
+<!-- ... Rest of HTML ... -->
+
+        <!-- Output Section -->
+        <div class="section">
+            <h2>Output</h2>
+            <div id="output_display" class="output-box">Output will appear here...</div>
+        </div>
+    </div>
+
+    <script>
+    let currentTrainingName = null;
+    let statusCheckInterval = null;
+
+    function setStatusMessage(message, type) {
+        const statusDiv = document.getElementById('train_status');
+        statusDiv.style.display = 'block';
+        statusDiv.innerHTML = message;
+        statusDiv.className = type;
+    }
+
+    function refreshModels() {
+        fetch('/list_models')
+            .then(response => response.json())
+            .then(data => {
+                const select = document.getElementById('model_select');
+                select.innerHTML = '';
+                if(data.models.length === 0) {
+                    select.innerHTML = '<option value="">-- No models trained yet --</option>';
+                } else {
+                    data.models.forEach(model => {
+                        const opt = document.createElement('option');
+                        opt.value = model.name;
+                        opt.innerText = model.status === 'training' ? `${model.name} (Training...)` : model.name;
+                        if(model.status === 'training') opt.disabled = true;
+                        select.appendChild(opt);
+                    });
+                }
+            });
+    }
+
+    function checkTrainingStatus() {
+        if (!currentTrainingName) return;
+        fetch(`/status/${currentTrainingName}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "completed") {
+                    setStatusMessage(`Training Complete!`, 'status-success');
+                    document.getElementById('train_btn').disabled = false;
+                    refreshModels();
+                    clearInterval(statusCheckInterval);
+                    currentTrainingName = null;
+                } else if (data.status === "training") {
+                    setStatusMessage(`Training in progress... <div class="spinner"></div>`, 'status-info');
+                } else if (data.status.startsWith("error")) {
+                    setStatusMessage(`Error: ${data.status}`, 'status-error');
+                    document.getElementById('train_btn').disabled = false;
+                    clearInterval(statusCheckInterval);
+                }
+            });
+    }
+
+    async function uploadAndTrain() {
+        const formatName = document.getElementById('format_name').value.trim();
+        const fileInput = document.getElementById('file_upload');
+        if(!formatName || fileInput.files.length === 0) {
+            alert("Please enter a format name and select a file.");
+            return;
+        }
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+        formData.append('format_name', formatName);
+
+        document.getElementById('train_btn').disabled = true;
+        setStatusMessage("Uploading file...", 'status-info');
+
+        const response = await fetch('/upload', { method: 'POST', body: formData });
+        const result = await response.json();
+
+        if(result.status === "started") {
+            currentTrainingName = formatName;
+            statusCheckInterval = setInterval(checkTrainingStatus, 2000);
+            checkTrainingStatus();
+        } else {
+            setStatusMessage("Error: " + result.message, 'status-error');
+            document.getElementById('train_btn').disabled = false;
+        }
+    }
+
+    async function generateData() {
+        const formatName = document.getElementById('model_select').value;
+        const seedText = document.getElementById('seed_text').value;
+
+        // FIX: Ensure we get the correct values
+        const amount = parseInt(document.getElementById('gen_amount').value) || 50;
+        const mode = document.getElementById('gen_mode').value;
+
+        const outputDiv = document.getElementById('output_display');
+
+        if(!formatName) {
+            alert("Please select a trained format first.");
+            return;
+        }
+
+        outputDiv.innerText = "Generating... (This may take a moment for large line counts)";
+        outputDiv.style.color = "#aaa";
+
+        try {
+            const response = await fetch('/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    format_name: formatName,
+                    start_str: seedText,
+                    amount: amount,
+                    mode: mode
+                })
+            });
+
+            const result = await response.json();
+            if(result.status === "success") {
+                outputDiv.innerText = result.generated_text;
+                outputDiv.style.color = "#0f0";
+            } else {
+                outputDiv.innerText = "Error: " + result.message;
+                outputDiv.style.color = "red";
+            }
+        } catch (error) {
+            outputDiv.innerText = "Request Failed: " + error;
+            outputDiv.style.color = "red";
+        }
+    }
+
+    window.onload = refreshModels;
+</script>
+</body>
+</html>
